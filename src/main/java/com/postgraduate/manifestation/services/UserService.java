@@ -1,8 +1,10 @@
 package com.postgraduate.manifestation.services;
+
 import com.postgraduate.manifestation.dto.UserDTO;
 import com.postgraduate.manifestation.model.User;
 import com.postgraduate.manifestation.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -19,6 +21,9 @@ public class UserService {
     @Autowired
     private MongoTemplate mongoTemplate;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     public User createUser(UserDTO userDTO) {
         Query query = new Query();
         query.addCriteria(Criteria.where("email").is(userDTO.getEmail()));
@@ -30,7 +35,7 @@ public class UserService {
         User user = new User();
         user.setName(userDTO.getName());
         user.setEmail(userDTO.getEmail());
-        user.setPassword(userDTO.getPassword());
+        user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
         return userRepository.save(user);
     }
 
@@ -57,7 +62,7 @@ public class UserService {
         
         user.setName(userDTO.getName());
         user.setEmail(userDTO.getEmail());
-        user.setPassword(userDTO.getPassword());
+        user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
         return userRepository.save(user);
     }
 
@@ -65,4 +70,3 @@ public class UserService {
         userRepository.deleteById(id);
     }
 }
-
